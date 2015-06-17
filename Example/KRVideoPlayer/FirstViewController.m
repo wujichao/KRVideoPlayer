@@ -21,7 +21,21 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    UIButton *b = [UIButton new];
+    b.backgroundColor = [UIColor redColor];
+    [b setTitle:@"remote" forState:UIControlStateNormal];
+    [b sizeToFit];
+    [b addTarget:self action:@selector(playRemoteVideo:) forControlEvents:UIControlEventTouchUpInside];
+    b.center = CGPointMake(100, 100);
+    [self.view addSubview:b];
     
+    UIButton *b1 = [UIButton new];
+    b1.backgroundColor = [UIColor redColor];
+    [b1 setTitle:@"streaming" forState:UIControlStateNormal];
+    [b1 sizeToFit];
+    [b1 addTarget:self action:@selector(playLocalVideo:) forControlEvents:UIControlEventTouchUpInside];
+    b1.center = CGPointMake(100, 200);
+    [self.view addSubview:b1];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -55,6 +69,20 @@
         [self.videoController showInWindow];
     }
     self.videoController.contentURL = url;
+}
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
+-(NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end
