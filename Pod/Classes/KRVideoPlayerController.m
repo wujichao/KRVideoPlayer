@@ -26,6 +26,7 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
 - (void)dealloc
 {
     [self cancelObserver];
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -40,7 +41,7 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
         [self configObserver];
         [self configControlAction];
         
-        
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
         [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(orientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     }
     return self;
@@ -299,24 +300,19 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
 - (void)orientationChange:(NSNotification *)notification
 {
     UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
-    if (deviceOrientation == UIDeviceOrientationLandscapeLeft)
+    if (deviceOrientation == UIDeviceOrientationLandscapeLeft ||
+        deviceOrientation == UIDeviceOrientationLandscapeRight)
     {
-        if (self.isFullscreenMode)
+        if (!self.isFullscreenMode)
         {
-           [UIView animateWithDuration:0.3 animations:^{
-                  self.view.transform =CGAffineTransformRotate(self.view.transform, M_PI);
-           }];
-          
+           [self fullScreenButtonClick:self.videoControl.fullScreenButton];
         }
-    }else if (deviceOrientation == UIDeviceOrientationLandscapeRight)
+    }
+    else if (deviceOrientation == UIDeviceOrientationPortrait)
     {
-    
         if (self.isFullscreenMode)
         {
-            [UIView animateWithDuration:0.3 animations:^{
-                                self.view.transform =CGAffineTransformRotate(self.view.transform, M_PI);
-            }];
-
+            [self fullScreenButtonClick:self.videoControl.fullScreenButton];
         }
     }
 }
