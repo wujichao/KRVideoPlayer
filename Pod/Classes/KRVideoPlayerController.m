@@ -246,7 +246,8 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
     double secondsRemaining = (fmod(totalTime, 60.0));;
     NSString *timeRmainingString = [NSString stringWithFormat:@"%02.0f:%02.0f", minutesRemaining, secondsRemaining];
     
-    BOOL isStreaming = self.movieSourceType == MPMovieSourceTypeStreaming;
+    BOOL isStreaming = self.movieSourceType == MPMovieSourceTypeStreaming
+                        && totalTime <= 0.f;
     self.videoControl.progressSlider.hidden = isStreaming;
     self.videoControl.timeLabel.text = [NSString stringWithFormat:@"%@%@",
                                         timeElapsedString,

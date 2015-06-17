@@ -59,7 +59,9 @@
 
 - (IBAction)playRemoteVideo:(id)sender
 {
-    NSURL *videoURL = [NSURL URLWithString:@"http://krtv.qiniudn.com/150522nextapp"];
+    //NSURL *videoURL = [NSURL URLWithString:@"http://krtv.qiniudn.com/150522nextapp"];
+    // 疑似不规范 明明是一个视频被判断成 MPMovieSourceTypeStreaming
+    NSURL *videoURL = [NSURL URLWithString:@"http://115.231.238.18/a345234946e4efede8a6b34219f26965.m3u8?type=web.cloudplay&k=bbddf79ae2f475237a3fe63f3e545430-98e7-1434540300"];
     [self playVideoWithURL:videoURL];
 }
 
