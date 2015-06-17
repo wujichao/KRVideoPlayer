@@ -215,32 +215,32 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
 }
 
 - (void)progressSliderTouchEnded:(UISlider *)slider {
-    [self setCurrentPlaybackTime:floor(slider.value)];
+    [self setCurrentPlaybackTime:(slider.value)];
     [self play];
     [self.videoControl autoFadeOutControlBar];
 }
 
 - (void)progressSliderValueChanged:(UISlider *)slider {
-    double currentTime = floor(slider.value);
-    double totalTime = floor(self.duration);
+    double currentTime = (slider.value);
+    double totalTime = (self.duration);
     [self setTimeLabelValues:currentTime totalTime:totalTime];
 }
 
 - (void)monitorVideoPlayback
 {
-    double currentTime = floor(self.currentPlaybackTime);
-    double totalTime = floor(self.duration);
+    double currentTime = (self.currentPlaybackTime);
+    double totalTime = (self.duration);
     [self setTimeLabelValues:currentTime totalTime:totalTime];
     self.videoControl.progressSlider.value = ceil(currentTime);
 }
 
 - (void)setTimeLabelValues:(double)currentTime totalTime:(double)totalTime {
-    double minutesElapsed = floor(currentTime / 60.0);
+    double minutesElapsed = (currentTime / 60.0);
     double secondsElapsed = fmod(currentTime, 60.0);
     NSString *timeElapsedString = [NSString stringWithFormat:@"%02.0f:%02.0f", minutesElapsed, secondsElapsed];
     
-    double minutesRemaining = floor(totalTime / 60.0);;
-    double secondsRemaining = floor(fmod(totalTime, 60.0));;
+    double minutesRemaining = (totalTime / 60.0);;
+    double secondsRemaining = (fmod(totalTime, 60.0));;
     NSString *timeRmainingString = [NSString stringWithFormat:@"%02.0f:%02.0f", minutesRemaining, secondsRemaining];
     
     self.videoControl.timeLabel.text = [NSString stringWithFormat:@"%@/%@",timeElapsedString,timeRmainingString];
