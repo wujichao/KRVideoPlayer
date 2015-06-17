@@ -18,9 +18,9 @@ static const CGFloat kVideoControlBarAutoFadeOutTimeinterval = 5.0;
 @property (nonatomic, strong) UIView *topBar;
 @property (nonatomic, strong) UIView *bottomBar;
 @property (nonatomic, strong) UIButton *playButton;
-@property (nonatomic, strong) UIButton *pauseButton;
+
 @property (nonatomic, strong) UIButton *fullScreenButton;
-@property (nonatomic, strong) UIButton *shrinkScreenButton;
+
 @property (nonatomic, strong) UISlider *progressSlider;
 @property (nonatomic, strong) UIButton *closeButton;
 @property (nonatomic, strong) UILabel *timeLabel;
@@ -40,11 +40,9 @@ static const CGFloat kVideoControlBarAutoFadeOutTimeinterval = 5.0;
         [self.topBar addSubview:self.closeButton];
         [self addSubview:self.bottomBar];
         [self.bottomBar addSubview:self.playButton];
-        [self.bottomBar addSubview:self.pauseButton];
-        self.pauseButton.hidden = YES;
+
         [self.bottomBar addSubview:self.fullScreenButton];
-        [self.bottomBar addSubview:self.shrinkScreenButton];
-        self.shrinkScreenButton.hidden = YES;
+
         [self.bottomBar addSubview:self.progressSlider];
         [self.bottomBar addSubview:self.timeLabel];
         [self addSubview:self.indicatorView];
@@ -61,9 +59,9 @@ static const CGFloat kVideoControlBarAutoFadeOutTimeinterval = 5.0;
     self.closeButton.frame = CGRectMake(CGRectGetWidth(self.topBar.bounds) - CGRectGetWidth(self.closeButton.bounds), CGRectGetMinX(self.topBar.bounds), CGRectGetWidth(self.closeButton.bounds), CGRectGetHeight(self.closeButton.bounds));
     self.bottomBar.frame = CGRectMake(CGRectGetMinX(self.bounds), CGRectGetHeight(self.bounds) - kVideoControlBarHeight, CGRectGetWidth(self.bounds), kVideoControlBarHeight);
     self.playButton.frame = CGRectMake(CGRectGetMinX(self.bottomBar.bounds), CGRectGetHeight(self.bottomBar.bounds)/2 - CGRectGetHeight(self.playButton.bounds)/2, CGRectGetWidth(self.playButton.bounds), CGRectGetHeight(self.playButton.bounds));
-    self.pauseButton.frame = self.playButton.frame;
+
     self.fullScreenButton.frame = CGRectMake(CGRectGetWidth(self.bottomBar.bounds) - CGRectGetWidth(self.fullScreenButton.bounds), CGRectGetHeight(self.bottomBar.bounds)/2 - CGRectGetHeight(self.fullScreenButton.bounds)/2, CGRectGetWidth(self.fullScreenButton.bounds), CGRectGetHeight(self.fullScreenButton.bounds));
-    self.shrinkScreenButton.frame = self.fullScreenButton.frame;
+
     self.progressSlider.frame = CGRectMake(CGRectGetMaxX(self.playButton.frame), CGRectGetHeight(self.bottomBar.bounds)/2 - CGRectGetHeight(self.progressSlider.bounds)/2, CGRectGetMinX(self.fullScreenButton.frame) - CGRectGetMaxX(self.playButton.frame), CGRectGetHeight(self.progressSlider.bounds));
     self.timeLabel.frame = CGRectMake(CGRectGetMidX(self.progressSlider.frame), CGRectGetHeight(self.bottomBar.bounds) - CGRectGetHeight(self.timeLabel.bounds) - 2.0, CGRectGetWidth(self.progressSlider.bounds)/2, CGRectGetHeight(self.timeLabel.bounds));
     self.indicatorView.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
@@ -152,40 +150,24 @@ static const CGFloat kVideoControlBarAutoFadeOutTimeinterval = 5.0;
     if (!_playButton) {
         _playButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_playButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-play"]] forState:UIControlStateNormal];
+        [_playButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-pause"]] forState:UIControlStateSelected];
         _playButton.bounds = CGRectMake(0, 0, kVideoControlBarHeight, kVideoControlBarHeight);
     }
     return _playButton;
 }
 
-- (UIButton *)pauseButton
-{
-    if (!_pauseButton) {
-        _pauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_pauseButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-pause"]] forState:UIControlStateNormal];
-        _pauseButton.bounds = CGRectMake(0, 0, kVideoControlBarHeight, kVideoControlBarHeight);
-    }
-    return _pauseButton;
-}
 
 - (UIButton *)fullScreenButton
 {
     if (!_fullScreenButton) {
         _fullScreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_fullScreenButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-fullscreen"]] forState:UIControlStateNormal];
+        [_fullScreenButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-shrinkscreen"]]  forState:UIControlStateSelected];
         _fullScreenButton.bounds = CGRectMake(0, 0, kVideoControlBarHeight, kVideoControlBarHeight);
     }
     return _fullScreenButton;
 }
 
-- (UIButton *)shrinkScreenButton
-{
-    if (!_shrinkScreenButton) {
-        _shrinkScreenButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_shrinkScreenButton setImage:[UIImage imageNamed:[self videoImageName:@"kr-video-player-shrinkscreen"]] forState:UIControlStateNormal];
-        _shrinkScreenButton.bounds = CGRectMake(0, 0, kVideoControlBarHeight, kVideoControlBarHeight);
-    }
-    return _shrinkScreenButton;
-}
 
 - (UISlider *)progressSlider
 {
