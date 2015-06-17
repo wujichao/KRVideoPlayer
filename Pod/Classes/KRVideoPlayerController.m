@@ -39,6 +39,9 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
         self.videoControl.frame = self.view.bounds;
         [self configObserver];
         [self configControlAction];
+        
+        
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(orientationChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
     }
     return self;
 }
@@ -102,11 +105,9 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
 
 - (void)configControlAction
 {
-    [self.videoControl.playButton addTarget:self action:@selector(playButtonClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.videoControl.pauseButton addTarget:self action:@selector(pauseButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.videoControl.playButton addTarget:self action:@selector(playButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.videoControl.closeButton addTarget:self action:@selector(closeButtonClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.videoControl.fullScreenButton addTarget:self action:@selector(fullScreenButtonClick) forControlEvents:UIControlEventTouchUpInside];
-    [self.videoControl.shrinkScreenButton addTarget:self action:@selector(shrinkScreenButtonClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.videoControl.fullScreenButton addTarget:self action:@selector(fullScreenButtonClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.videoControl.progressSlider addTarget:self action:@selector(progressSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
     [self.videoControl.progressSlider addTarget:self action:@selector(progressSliderTouchBegan:) forControlEvents:UIControlEventTouchDown];
     [self.videoControl.progressSlider addTarget:self action:@selector(progressSliderTouchEnded:) forControlEvents:UIControlEventTouchUpInside];
@@ -118,14 +119,12 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
 - (void)onMPMoviePlayerPlaybackStateDidChangeNotification
 {
     if (self.playbackState == MPMoviePlaybackStatePlaying) {
-        self.videoControl.pauseButton.hidden = NO;
-        self.videoControl.playButton.hidden = YES;
+        self.videoControl.playButton.selected = YES;
         [self startDurationTimer];
         [self.videoControl.indicatorView stopAnimating];
         [self.videoControl autoFadeOutControlBar];
     } else {
-        self.videoControl.pauseButton.hidden = YES;
-        self.videoControl.playButton.hidden = NO;
+        self.videoControl.playButton.selected = NO;
         [self stopDurationTimer];
         if (self.playbackState == MPMoviePlaybackStateStopped) {
             [self.videoControl animateShow];
@@ -150,18 +149,16 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
     [self setProgressSliderMaxMinValues];
 }
 
-- (void)playButtonClick
+- (void)playButtonClick:(UIButton *)sender
 {
-    [self play];
-    self.videoControl.playButton.hidden = YES;
-    self.videoControl.pauseButton.hidden = NO;
-}
-
-- (void)pauseButtonClick
-{
-    [self pause];
-    self.videoControl.playButton.hidden = NO;
-    self.videoControl.pauseButton.hidden = YES; 
+    sender.selected = !sender.selected;
+    if (sender.selected)
+    {
+        [self play];
+    }else
+    {
+        [self pause];
+    }
 }
 
 - (void)closeButtonClick
@@ -169,37 +166,42 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
     [self dismiss];
 }
 
-- (void)fullScreenButtonClick
+- (void)fullScreenButtonClick:(UIButton *)sender
 {
+    sender.selected = !sender.selected;
+    self.isFullscreenMode = sender.selected;
+   
     if (self.isFullscreenMode) {
-        return;
+        [self handleFullScreen];
+    } else {
+        [self handleShrinkScreen];
     }
+}
+- (void)handleFullScreen
+{
+    UIDeviceOrientation orinentation = [UIDevice currentDevice].orientation;
     self.originFrame = self.view.frame;
     CGFloat height = [[UIScreen mainScreen] bounds].size.width;
     CGFloat width = [[UIScreen mainScreen] bounds].size.height;
-    CGRect frame = CGRectMake((height - width) / 2, (width - height) / 2, width, height);;
+    CGRect frame = CGRectMake((height - width) / 2, (width - height) / 2, width, height);
     [UIView animateWithDuration:0.3f animations:^{
         self.frame = frame;
-        [self.view setTransform:CGAffineTransformMakeRotation(M_PI_2)];
-    } completion:^(BOOL finished) {
-        self.isFullscreenMode = YES;
-        self.videoControl.fullScreenButton.hidden = YES;
-        self.videoControl.shrinkScreenButton.hidden = NO;
-    }];
+        
+        if (orinentation == UIDeviceOrientationLandscapeRight) {
+            [self.view setTransform:CGAffineTransformMakeRotation(-M_PI_2)];
+        } else {
+            [self.view setTransform:CGAffineTransformMakeRotation(M_PI_2)];
+        }
+        
+    } completion:nil];
 }
-
-- (void)shrinkScreenButtonClick
+- (void)handleShrinkScreen
 {
-    if (!self.isFullscreenMode) {
-        return;
-    }
     [UIView animateWithDuration:0.3f animations:^{
         [self.view setTransform:CGAffineTransformIdentity];
         self.frame = self.originFrame;
     } completion:^(BOOL finished) {
-        self.isFullscreenMode = NO;
-        self.videoControl.fullScreenButton.hidden = NO;
-        self.videoControl.shrinkScreenButton.hidden = YES;
+       
     }];
 }
 
@@ -294,5 +296,28 @@ static const CGFloat kVideoPlayerControllerAnimationTimeinterval = 0.3f;
     [self.videoControl layoutIfNeeded];
 }
 
+- (void)orientationChange:(NSNotification *)notification
+{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    if (deviceOrientation == UIDeviceOrientationLandscapeLeft)
+    {
+        if (self.isFullscreenMode)
+        {
+           [UIView animateWithDuration:0.3 animations:^{
+                  self.view.transform =CGAffineTransformRotate(self.view.transform, M_PI);
+           }];
+          
+        }
+    }else if (deviceOrientation == UIDeviceOrientationLandscapeRight)
+    {
+    
+        if (self.isFullscreenMode)
+        {
+            [UIView animateWithDuration:0.3 animations:^{
+                                self.view.transform =CGAffineTransformRotate(self.view.transform, M_PI);
+            }];
 
+        }
+    }
+}
 @end

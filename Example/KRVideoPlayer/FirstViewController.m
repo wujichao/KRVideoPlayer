@@ -31,7 +31,9 @@
 
 - (IBAction)playLocalVideo:(id)sender
 {
-    NSURL *videoURL = [[NSBundle mainBundle] URLForResource:@"150511_JiveBike" withExtension:@"mov"];
+    //    NSURL *videoURL = [[NSBundle mainBundle] URLForResource:@"150511_JiveBike" withExtension:@"mov"];
+    //  [self playVideoWithURL:videoURL];
+    NSURL *videoURL = [NSURL URLWithString:@"http://219.232.160.141:5080/hls/c64024e7cd451ac19613345704f985fa.m3u8"];
     [self playVideoWithURL:videoURL];
 }
 
